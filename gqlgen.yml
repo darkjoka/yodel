@@ -50,14 +50,18 @@ autobind:
 # modelgen, the others will be allowed when binding to fields. Configure them to
 # your liking
 models:
-  ID:
+  User:
     model:
-      - github.com/99designs/gqlgen/graphql.ID
-      - github.com/99designs/gqlgen/graphql.Int
-      - github.com/99designs/gqlgen/graphql.Int64
-      - github.com/99designs/gqlgen/graphql.Int32
-  Int:
+      - github.com/darkjoka/yodel/graph/model.User
+  Comment:
     model:
-      - github.com/99designs/gqlgen/graphql.Int
-      - github.com/99designs/gqlgen/graphql.Int64
-      - github.com/99designs/gqlgen/graphql.Int32
+      - github.com/darkjoka/yodel/graph/model.Comment
+  Post:
+    model:
+      - github.com/darkjoka/yodel/graph/model.Post
+  Vote:
+    model:
+      - github.com/darkjoka/yodel/graph/model.Vote
+  Commentor:
+    model:
+      - github.com/darkjoka/yodel/graph/model.Commentor
