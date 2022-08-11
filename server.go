@@ -8,16 +8,28 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/darkjoka/yodel/graph"
+	"github.com/darkjoka/yodel/graph/db"
 	"github.com/darkjoka/yodel/graph/generated"
+	"github.com/joho/godotenv"
 )
 
 const defaultPort = "8000"
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
+	godotenv.Load(".env")
+	port, portOk := os.LookupEnv("PORT")
+	dsn, dsnOk := os.LookupEnv("DATABASE_URI")
+
+	if !portOk {
 		port = defaultPort
 	}
+
+	if !dsnOk {
+		panic("Database not setup")
+	}
+
+	db := db.New(dsn)
+	defer db.Close()
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
