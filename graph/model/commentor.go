@@ -6,7 +6,7 @@ import (
 )
 
 type Commentor struct {
-	bun.BaseModel `bun:"table:commentor,alias:cr"`
+	bun.BaseModel `bun:"table:commentors,alias:cr"`
 
 	ID          uuid.UUID `bun:"id,type:uuid,pk,default:uuid_generate_v4()"`
 	UserID      uuid.UUID `bun:"user_id,type:uuid,unique"`

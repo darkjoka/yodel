@@ -6,7 +6,7 @@ import (
 )
 
 type Vote struct {
-	bun.BaseModel `bun:"table:vote,alias:v"`
+	bun.BaseModel `bun:"table:votes,alias:v"`
 
 	ID       uuid.UUID `bun:"id,type:uuid,pk,default:uuid_generate_v4()"`
 	UserID   uuid.UUID `bun:"user_id,type:uuid"`
