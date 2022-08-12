@@ -6,6 +6,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/darkjoka/yodel/graph/generated"
 	"github.com/darkjoka/yodel/graph/model"
@@ -27,14 +28,12 @@ func (r *commentResolver) PostID(ctx context.Context, obj *model.Comment) (strin
 	return obj.PostID.String(), nil
 }
 
-// CreatedAt is the resolver for the createdAt field.
-func (r *commentResolver) CreatedAt(ctx context.Context, obj *model.Comment) (string, error) {
-	return obj.CreatedAt.String(), nil
+func (r *commentResolver) CreatedAt(ctx context.Context, obj *model.Comment) (time.Time, error) {
+	return obj.CreatedAt, nil
 }
 
 // Register is the resolver for the register field.
 func (r *mutationResolver) Register(ctx context.Context, input model.NewUser) (*model.User, error) {
-	fmt.Println("got called")
 	user := &model.User{Username: input.Username, Password: input.Password}
 	err := r.UserScheme.Create(user, ctx)
 	return user, err
@@ -59,7 +58,6 @@ func (r *mutationResolver) NewPost(ctx context.Context, input model.NewPost) (*m
 
 // NewComment is the resolver for the newComment field.
 func (r *mutationResolver) NewComment(ctx context.Context, input *model.NewComment) (*model.Comment, error) {
-
 	// TODO: post_id should be change to parent id and type possibly added.
 	userId, _ := uuid.Parse(input.UserID)
 	postId, _ := uuid.Parse(input.PostID)
@@ -85,7 +83,11 @@ func (r *postResolver) ID(ctx context.Context, obj *model.Post) (string, error) 
 
 // UserID is the resolver for the userId field.
 func (r *postResolver) UserID(ctx context.Context, obj *model.Post) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	return obj.UserID.String(), nil
+}
+
+func (r *postResolver) CreatedAt(ctx context.Context, obj *model.Post) (time.Time, error) {
+	return obj.CreatedAt, nil
 }
 
 // IsFlagged is the resolver for the isFlagged field.
@@ -94,38 +96,43 @@ func (r *postResolver) IsFlagged(ctx context.Context, obj *model.Post) (string, 
 }
 
 // Longitude is the resolver for the longitude field.
-func (r *postResolver) Longitude(ctx context.Context, obj *model.Post) (int, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *postResolver) Longitude(ctx context.Context, obj *model.Post) (float64, error) {
+	return float64(obj.Latitude), nil
 }
 
 // Latitude is the resolver for the latitude field.
-func (r *postResolver) Latitude(ctx context.Context, obj *model.Post) (int, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-// CreatedAt is the resolver for the createdAt field.
-func (r *postResolver) CreatedAt(ctx context.Context, obj *model.Post) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *postResolver) Latitude(ctx context.Context, obj *model.Post) (float64, error) {
+	return float64(obj.Latitude), nil
 }
 
 // Posts is the resolver for the posts field.
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
-	panic(fmt.Errorf("not implemented"))
+	var posts []*model.Post
+	err := r.PostScheme.DB.NewSelect().Model(&posts).Scan(ctx)
+	return posts, err
 }
 
 // Post is the resolver for the post field.
 func (r *queryResolver) Post(ctx context.Context, id string) (*model.Post, error) {
-	panic(fmt.Errorf("not implemented"))
+	post := new(model.Post)
+	err := r.PostScheme.DB.NewSelect().Model(post).Where("id = ?", id).Scan(ctx)
+	return post, err
 }
 
 // Comments is the resolver for the comments field.
 func (r *queryResolver) Comments(ctx context.Context, postID string) ([]*model.Comment, error) {
-	panic(fmt.Errorf("not implemented"))
+	var comments []*model.Comment
+	err := r.CommentScheme.DB.NewSelect().Model(&comments).Where("post_id = ?", postID).Scan(ctx)
+	return comments, err
 }
 
 // ID is the resolver for the id field.
 func (r *userResolver) ID(ctx context.Context, obj *model.User) (string, error) {
 	return obj.ID.String(), nil
+}
+
+func (r *userResolver) Karma(ctx context.Context, obj *model.User) (int, error) {
+	return obj.Karma, nil
 }
 
 // Comment returns generated.CommentResolver implementation.
@@ -148,16 +155,3 @@ type mutationResolver struct{ *Resolver }
 type postResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type userResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *postResolver) Comments(ctx context.Context, obj *model.Post) ([]*model.Comment, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *userResolver) Karma(ctx context.Context, obj *model.User) (int, error) {
-	return obj.Karma, nil
-}
