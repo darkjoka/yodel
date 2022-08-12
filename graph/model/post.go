@@ -31,3 +31,9 @@ func (p *PostScheme) Create(post *Post, ctx context.Context) error {
 	_, err := p.DB.NewInsert().Model(post).Exec(ctx)
 	return err
 }
+
+func (p *PostScheme) FindAll(ctx context.Context) (*[]Post, error) {
+	var posts []Post
+	_, err := p.DB.NewSelect().Model(&posts).Exec(ctx)
+	return &posts, err
+}
