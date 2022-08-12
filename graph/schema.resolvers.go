@@ -51,7 +51,11 @@ func (r *mutationResolver) Register(ctx context.Context, input model.NewUser) (s
 // Login is the resolver for the login field.
 func (r *mutationResolver) Login(ctx context.Context, input model.NewUser) (string, error) {
 	user := new(model.User)
-	err := r.UserScheme.DB.NewSelect().Model(user).Scan(ctx)
+	err := r.UserScheme.DB.NewSelect().Model(user).Where("username = ?", input.Username).Scan(ctx)
+	if valid := model.CheckPasswordHash(input.Password, user.Password); !valid {
+		return "", fmt.Errorf("Wrong username or password")
+	}
+
 	token, _ := jwt.GenerateToken(user.ID)
 	return token, err
 }
