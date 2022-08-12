@@ -2,6 +2,19 @@
 
 package model
 
+type NewComment struct {
+	UserID  string `json:"userId"`
+	PostID  string `json:"postId"`
+	Content string `json:"content"`
+}
+
+type NewPost struct {
+	UserID    string `json:"userId"`
+	Content   string `json:"content"`
+	Longitude int    `json:"longitude"`
+	Latitude  int    `json:"latitude"`
+}
+
 type NewUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
