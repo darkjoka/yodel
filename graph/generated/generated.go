@@ -54,6 +54,7 @@ type ComplexityRoot struct {
 		ID            func(childComplexity int) int
 		IsFlagged     func(childComplexity int) int
 		NumberOfVotes func(childComplexity int) int
+		OrderIndex    func(childComplexity int) int
 		PostID        func(childComplexity int) int
 		UserID        func(childComplexity int) int
 	}
@@ -94,6 +95,8 @@ type CommentResolver interface {
 	ID(ctx context.Context, obj *model.Comment) (string, error)
 	UserID(ctx context.Context, obj *model.Comment) (string, error)
 	PostID(ctx context.Context, obj *model.Comment) (string, error)
+
+	OrderIndex(ctx context.Context, obj *model.Comment) (int, error)
 }
 type MutationResolver interface {
 	Register(ctx context.Context, input model.NewUser) (*model.User, error)
@@ -167,6 +170,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Comment.NumberOfVotes(childComplexity), true
+
+	case "Comment.orderIndex":
+		if e.complexity.Comment.OrderIndex == nil {
+			break
+		}
+
+		return e.complexity.Comment.OrderIndex(childComplexity), true
 
 	case "Comment.postId":
 		if e.complexity.Comment.PostID == nil {
@@ -443,6 +453,7 @@ type Comment {
   content: String!
   numberOfVotes: Int!
   isFlagged: Boolean!
+  orderIndex: Int!
   createdAt: Time!
 }
 
@@ -877,6 +888,50 @@ func (ec *executionContext) fieldContext_Comment_isFlagged(ctx context.Context, 
 	return fc, nil
 }
 
+func (ec *executionContext) _Comment_orderIndex(ctx context.Context, field graphql.CollectedField, obj *model.Comment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Comment_orderIndex(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Comment().OrderIndex(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Comment_orderIndex(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Comment",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Comment_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Comment) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Comment_createdAt(ctx, field)
 	if err != nil {
@@ -1112,6 +1167,8 @@ func (ec *executionContext) fieldContext_Mutation_newComment(ctx context.Context
 				return ec.fieldContext_Comment_numberOfVotes(ctx, field)
 			case "isFlagged":
 				return ec.fieldContext_Comment_isFlagged(ctx, field)
+			case "orderIndex":
+				return ec.fieldContext_Comment_orderIndex(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Comment_createdAt(ctx, field)
 			}
@@ -1766,6 +1823,8 @@ func (ec *executionContext) fieldContext_Query_comments(ctx context.Context, fie
 				return ec.fieldContext_Comment_numberOfVotes(ctx, field)
 			case "isFlagged":
 				return ec.fieldContext_Comment_isFlagged(ctx, field)
+			case "orderIndex":
+				return ec.fieldContext_Comment_orderIndex(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Comment_createdAt(ctx, field)
 			}
@@ -4067,6 +4126,26 @@ func (ec *executionContext) _Comment(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "orderIndex":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Comment_orderIndex(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		case "createdAt":
 
 			out.Values[i] = ec._Comment_createdAt(ctx, field, obj)
