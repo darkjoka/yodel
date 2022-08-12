@@ -6,7 +6,6 @@ package graph
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/darkjoka/yodel/graph/generated"
 	"github.com/darkjoka/yodel/graph/model"
@@ -28,8 +27,16 @@ func (r *commentResolver) PostID(ctx context.Context, obj *model.Comment) (strin
 	return obj.PostID.String(), nil
 }
 
-func (r *commentResolver) CreatedAt(ctx context.Context, obj *model.Comment) (time.Time, error) {
-	return obj.CreatedAt, nil
+// OrderIndex is the resolver for the orderIndex field.
+func (r *commentResolver) OrderIndex(ctx context.Context, obj *model.Comment) (int, error) {
+	commentor := new(model.Commentor)
+	query := r.CommentorScheme.DB.NewSelect().Model(commentor).Where("user_id = ? AND post_id = ?", obj.UserID, obj.PostID)
+	if err := query.Scan(ctx); err == nil {
+		return commentor.IncrementID, nil
+	}
+
+	// post author is commentor
+	return 0, nil
 }
 
 // Register is the resolver for the register field.
@@ -103,10 +110,6 @@ func (r *postResolver) UserID(ctx context.Context, obj *model.Post) (string, err
 	return obj.UserID.String(), nil
 }
 
-func (r *postResolver) CreatedAt(ctx context.Context, obj *model.Post) (time.Time, error) {
-	return obj.CreatedAt, nil
-}
-
 // IsFlagged is the resolver for the isFlagged field.
 func (r *postResolver) IsFlagged(ctx context.Context, obj *model.Post) (string, error) {
 	panic(fmt.Errorf("not implemented"))
@@ -146,10 +149,6 @@ func (r *queryResolver) Comments(ctx context.Context, postID string) ([]*model.C
 // ID is the resolver for the id field.
 func (r *userResolver) ID(ctx context.Context, obj *model.User) (string, error) {
 	return obj.ID.String(), nil
-}
-
-func (r *userResolver) Karma(ctx context.Context, obj *model.User) (int, error) {
-	return obj.Karma, nil
 }
 
 // Comment returns generated.CommentResolver implementation.
