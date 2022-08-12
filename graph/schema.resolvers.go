@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"github.com/darkjoka/yodel/graph/generated"
+	"github.com/darkjoka/yodel/graph/jwt"
 	"github.com/darkjoka/yodel/graph/model"
 	"github.com/google/uuid"
 )
@@ -40,10 +41,19 @@ func (r *commentResolver) OrderIndex(ctx context.Context, obj *model.Comment) (i
 }
 
 // Register is the resolver for the register field.
-func (r *mutationResolver) Register(ctx context.Context, input model.NewUser) (*model.User, error) {
+func (r *mutationResolver) Register(ctx context.Context, input model.NewUser) (string, error) {
 	user := &model.User{Username: input.Username, Password: input.Password}
 	err := r.UserScheme.Create(user, ctx)
-	return user, err
+	token, _ := jwt.GenerateToken(user.ID)
+	return token, err
+}
+
+// Login is the resolver for the login field.
+func (r *mutationResolver) Login(ctx context.Context, input model.NewUser) (string, error) {
+	user := new(model.User)
+	err := r.UserScheme.DB.NewSelect().Model(user).Scan(ctx)
+	token, _ := jwt.GenerateToken(user.ID)
+	return token, err
 }
 
 // NewPost is the resolver for the newPost field.
