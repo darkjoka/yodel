@@ -33,10 +33,11 @@ func main() {
 	defer DB.Close()
 
 	cfg := &graph.Resolver{
-		UserScheme: model.UserScheme{DB: DB},
-		PostScheme: model.PostScheme{DB: DB},
-		CommentScheme: model.CommentScheme{DB:DB},
-		VoteScheme: model.VoteScheme{DB:DB}
+		UserScheme:      model.UserScheme{DB: DB},
+		PostScheme:      model.PostScheme{DB: DB},
+		CommentScheme:   model.CommentScheme{DB: DB},
+		VoteScheme:      model.VoteScheme{DB: DB},
+		CommentorScheme: model.CommentorScheme{},
 	}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: cfg}))

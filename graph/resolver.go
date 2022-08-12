@@ -7,8 +7,9 @@ import "github.com/darkjoka/yodel/graph/model"
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	UserScheme    model.UserScheme
-	PostScheme    model.PostScheme
-	CommentScheme model.CommentScheme
-	VoteScheme    model.VoteScheme
+	UserScheme      model.UserScheme
+	PostScheme      model.PostScheme
+	CommentScheme   model.CommentScheme
+	VoteScheme      model.VoteScheme
+	CommentorScheme model.CommentorScheme
 }
