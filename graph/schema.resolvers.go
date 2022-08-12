@@ -59,8 +59,25 @@ func (r *mutationResolver) NewPost(ctx context.Context, input model.NewPost) (*m
 // NewComment is the resolver for the newComment field.
 func (r *mutationResolver) NewComment(ctx context.Context, input *model.NewComment) (*model.Comment, error) {
 	// TODO: post_id should be change to parent id and type possibly added.
+	// TODO: after jwt integration remove user id from input and refine author check
 	userId, _ := uuid.Parse(input.UserID)
 	postId, _ := uuid.Parse(input.PostID)
+
+	// get post author and check if the same as commentor
+	post := new(model.Post)
+	r.PostScheme.DB.NewSelect().Model(post).Where("id = ?", postId).Scan(ctx)
+	// not author
+	if post.UserID != userId {
+		commentor := new(model.Commentor)
+		query := r.CommentorScheme.DB.NewSelect().Model(commentor).Where("user_id = ? AND post_id = ?", userId, postId)
+		if err := query.Scan(ctx); err != nil {
+			newCommentor := &model.Commentor{
+				UserID: userId,
+				PostID: postId,
+			}
+			r.CommentScheme.DB.NewInsert().Model(newCommentor).Exec(ctx)
+		}
+	}
 
 	comment := &model.Comment{
 		UserID:    userId,
