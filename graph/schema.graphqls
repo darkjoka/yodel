@@ -41,7 +41,8 @@ type Query {
 }
 
 type Mutation {
-  register(input: NewUser!): User!
+  register(input: NewUser!): String!
+  login(input: NewUser!): String!
   newPost(input: NewPost!): Post!
   newComment(input: NewComment): Comment!
 }
