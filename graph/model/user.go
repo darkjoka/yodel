@@ -1,6 +1,8 @@
 package model
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
@@ -14,10 +16,17 @@ type User struct {
 	Karma    int       `bun:"karma,notnull,default:0"`
 }
 
-// type UserScheme struct {
-// 	db *bun.DB
-// }
+type UserScheme struct {
+	DB *bun.DB
+}
 
-// func (u *UserScheme) {
-// 	u.dbUser()
-// }
+func (u *UserScheme) Create(user *User, ctx context.Context) error {
+	_, err := u.DB.NewInsert().Model(user).Exec(ctx)
+	return err
+}
+
+func (u *UserScheme) FindById(id string, ctx context.Context) (*User, error) {
+	user := new(User)
+	err := u.DB.NewSelect().Model(user).Where("id = ?", id).Scan(ctx)
+	return user, err
+}
