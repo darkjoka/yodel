@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,4 +21,13 @@ type Post struct {
 	Longitude        float32   `bun:"longitude,notnull"`
 	Latitude         float32   `bun:"latitude,notnull"`
 	CreatedAt        time.Time `bun:"created_at,notnull,default:current_timestamp"`
+}
+
+type PostScheme struct {
+	DB *bun.DB
+}
+
+func (p *PostScheme) Create(post *Post, ctx context.Context) error {
+	_, err := p.DB.NewInsert().Model(post).Exec(ctx)
+	return err
 }
