@@ -33,7 +33,10 @@ func (r *commentResolver) CreatedAt(ctx context.Context, obj *model.Comment) (st
 
 // Register is the resolver for the register field.
 func (r *mutationResolver) Register(ctx context.Context, input model.NewUser) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	fmt.Println("got called")
+	user := &model.User{Username: input.Username, Password: input.Password}
+	err := r.UserScheme.Create(user, ctx)
+	return user, err
 }
 
 // ID is the resolver for the id field.
@@ -83,12 +86,12 @@ func (r *queryResolver) Post(ctx context.Context, id string) (*model.Post, error
 
 // ID is the resolver for the id field.
 func (r *userResolver) ID(ctx context.Context, obj *model.User) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	return obj.ID.String(), nil
 }
 
 // Karma is the resolver for the karma field.
 func (r *userResolver) Karma(ctx context.Context, obj *model.User) (int, error) {
-	panic(fmt.Errorf("not implemented"))
+	return obj.Karma, nil
 }
 
 // Comment returns generated.CommentResolver implementation.
