@@ -35,6 +35,8 @@ func main() {
 	cfg := &graph.Resolver{
 		UserScheme: model.UserScheme{DB: DB},
 		PostScheme: model.PostScheme{DB: DB},
+		CommentScheme: model.CommentScheme{DB:DB},
+		VoteScheme: model.VoteScheme{DB:DB}
 	}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: cfg}))
