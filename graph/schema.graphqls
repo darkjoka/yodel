@@ -2,7 +2,7 @@
 #
 # https://gqlgen.com/getting-started/
 
-scalar Date
+scalar Time
 
 type User {
   id: ID!
@@ -18,9 +18,9 @@ type Post {
   numberOfVotes: Int!
   numberOfComments: Int!
   location: String!
-  longitude: Int!
-  latitude: Int!
-  createdAt: Date!
+  longitude: Float!
+  latitude: Float!
+  createdAt: Time!
 }
 
 type Comment {
@@ -30,7 +30,7 @@ type Comment {
   content: String!
   numberOfVotes: Int!
   isFlagged: Boolean!
-  createdAt: Date!
+  createdAt: Time!
 }
 
 type Query {
@@ -53,12 +53,14 @@ input NewUser {
 input NewPost {
   userId: ID!
   content: String!
-  longitude: Int!
-  latitude: Int!
+  longitude: Float!
+  latitude: Float!
 }
 
 input NewComment {
   userId: ID!
   postId: ID!
   content: String!
+  longitude: Float!
+  latitude: Float!
 }
