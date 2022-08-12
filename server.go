@@ -10,6 +10,7 @@ import (
 	"github.com/darkjoka/yodel/graph"
 	"github.com/darkjoka/yodel/graph/db"
 	"github.com/darkjoka/yodel/graph/generated"
+	"github.com/darkjoka/yodel/graph/model"
 	"github.com/joho/godotenv"
 )
 
@@ -28,10 +29,15 @@ func main() {
 		panic("Database not setup")
 	}
 
-	db := db.New(dsn)
-	defer db.Close()
+	DB := db.New(dsn)
+	defer DB.Close()
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	cfg := &graph.Resolver{
+		UserScheme: model.UserScheme{DB: DB},
+		PostScheme: model.PostScheme{DB: DB},
+	}
+
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: cfg}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
