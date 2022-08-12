@@ -13,7 +13,7 @@ type Comment struct {
 
 	ID            uuid.UUID `bun:"id,type:uuid,pk,default:uuid_generate_v4()"`
 	UserID        uuid.UUID `bun:"user_id,type:uuid"`
-	postID        uuid.UUID `bun:"post_id,type:uuid"`
+	PostID        uuid.UUID `bun:"post_id,type:uuid"`
 	Content       string    `bun:"content,notnull,unique"`
 	IsFlagged     bool      `bun:"is_flagged,notnull,default:false"`
 	NumberOfVotes int       `bun:"number_of_votes,notnull,default:0"`
