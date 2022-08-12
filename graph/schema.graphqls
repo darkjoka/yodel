@@ -21,13 +21,13 @@ type Post {
   longitude: Int!
   latitude: Int!
   createdAt: Date!
-  comments: [Comment!]!
 }
 
 type Comment {
   id: ID!
   userId: ID!
   postId: ID!
+  content: String!
   numberOfVotes: Int!
   isFlagged: Boolean!
   createdAt: Date!
@@ -36,6 +36,13 @@ type Comment {
 type Query {
   posts: [Post!]!
   post(id: ID!): Post!
+  comments(postId: ID!): [Comment!]!
+}
+
+type Mutation {
+  register(input: NewUser!): User!
+  newPost(input: NewPost!): Post!
+  newComment(input: NewComment): Comment!
 }
 
 input NewUser {
@@ -43,6 +50,15 @@ input NewUser {
   password: String!
 }
 
-type Mutation {
-  register(input: NewUser!): User!
+input NewPost {
+  userId: ID!
+  content: String!
+  longitude: Int!
+  latitude: Int!
+}
+
+input NewComment {
+  userId: ID!
+  postId: ID!
+  content: String!
 }
