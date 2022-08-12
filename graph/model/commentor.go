@@ -12,7 +12,7 @@ type Commentor struct {
 
 	ID          uuid.UUID `bun:"id,type:uuid,pk,default:uuid_generate_v4()"`
 	UserID      uuid.UUID `bun:"user_id,type:uuid,unique"`
-	postID      uuid.UUID `bun:"post_id,type:uuid"`
+	PostID      uuid.UUID `bun:"post_id,type:uuid"`
 	IncrementID int       `bun:"increment_id,autoincrement"`
 }
 
