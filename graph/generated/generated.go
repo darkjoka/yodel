@@ -490,14 +490,12 @@ input NewUser {
 }
 
 input NewPost {
-  userId: ID!
   content: String!
   longitude: Float!
   latitude: Float!
 }
 
 input NewComment {
-  userId: ID!
   postId: ID!
   content: String!
   longitude: Float!
@@ -3963,21 +3961,13 @@ func (ec *executionContext) unmarshalInputNewComment(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"userId", "postId", "content", "longitude", "latitude"}
+	fieldsInOrder := [...]string{"postId", "content", "longitude", "latitude"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "userId":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			it.UserID, err = ec.unmarshalNID2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "postId":
 			var err error
 
@@ -4023,21 +4013,13 @@ func (ec *executionContext) unmarshalInputNewPost(ctx context.Context, obj inter
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"userId", "content", "longitude", "latitude"}
+	fieldsInOrder := [...]string{"content", "longitude", "latitude"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "userId":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			it.UserID, err = ec.unmarshalNID2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "content":
 			var err error
 

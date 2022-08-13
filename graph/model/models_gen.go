@@ -3,7 +3,6 @@
 package model
 
 type NewComment struct {
-	UserID    string  `json:"userId"`
 	PostID    string  `json:"postId"`
 	Content   string  `json:"content"`
 	Longitude float64 `json:"longitude"`
@@ -11,7 +10,6 @@ type NewComment struct {
 }
 
 type NewPost struct {
-	UserID    string  `json:"userId"`
 	Content   string  `json:"content"`
 	Longitude float64 `json:"longitude"`
 	Latitude  float64 `json:"latitude"`
