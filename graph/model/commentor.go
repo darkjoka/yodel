@@ -10,10 +10,10 @@ import (
 type Commentor struct {
 	bun.BaseModel `bun:"table:commentors,alias:cr"`
 
-	ID          uuid.UUID `bun:"id,type:uuid,pk,default:uuid_generate_v4()"`
-	UserID      uuid.UUID `bun:"user_id,type:uuid,unique"`
-	PostID      uuid.UUID `bun:"post_id,type:uuid"`
-	IncrementID int       `bun:"increment_id,autoincrement"`
+	ID     uuid.UUID `bun:"id,type:uuid,pk,default:uuid_generate_v4()"`
+	UserID uuid.UUID `bun:"user_id,type:uuid,unique"`
+	PostID uuid.UUID `bun:"post_id,type:uuid"`
+	Order  int       `bun:"order_id,autoincrement"`
 }
 
 type CommentorScheme struct {
