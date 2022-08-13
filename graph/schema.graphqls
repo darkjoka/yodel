@@ -53,14 +53,12 @@ input NewUser {
 }
 
 input NewPost {
-  userId: ID!
   content: String!
   longitude: Float!
   latitude: Float!
 }
 
 input NewComment {
-  userId: ID!
   postId: ID!
   content: String!
   longitude: Float!
