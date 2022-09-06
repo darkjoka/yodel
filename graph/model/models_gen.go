@@ -2,6 +2,10 @@
 
 package model
 
+import (
+	"time"
+)
+
 type NewComment struct {
 	PostID    string  `json:"postId"`
 	Content   string  `json:"content"`
@@ -18,4 +22,14 @@ type NewPost struct {
 type NewUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+type PageInfo struct {
+	HasNextPage bool      `json:"hasNextPage"`
+	EndCursor   time.Time `json:"endCursor"`
+}
+
+type PostConnection struct {
+	Edges    []*Post   `json:"edges"`
+	PageInfo *PageInfo `json:"pageInfo"`
 }
