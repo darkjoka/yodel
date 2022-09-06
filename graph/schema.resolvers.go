@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/darkjoka/yodel/graph/auth"
 	"github.com/darkjoka/yodel/graph/generated"
@@ -151,7 +152,6 @@ func (r *mutationResolver) NewComment(ctx context.Context, input *model.NewComme
 	_, err := r.CommentScheme.DB.NewInsert().Model(comment).Exec(ctx)
 	// // TODO: validate before output
 	return comment, err
-
 }
 
 // ID is the resolver for the id field.
@@ -180,10 +180,50 @@ func (r *postResolver) Latitude(ctx context.Context, obj *model.Post) (float64, 
 }
 
 // Posts is the resolver for the posts field.
-func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
+func (r *queryResolver) Posts(ctx context.Context, cursor *time.Time, limit *int) (*model.PostConnection, error) {
 	var posts []*model.Post
-	err := r.PostScheme.DB.NewSelect().Model(&posts).Scan(ctx)
-	return posts, err
+	baseLimit := 10
+	query := r.PostScheme.DB.NewSelect().Model(&posts)
+
+	if cursor != nil {
+		query = query.Where("created_at > ?", cursor)
+	}
+
+	// TODO: add order of fetch
+
+	if limit == nil {
+		limit = &baseLimit
+	}
+	query = query.Limit(*limit + 1)
+	query = query.OrderExpr("created_at ASC")
+
+	err := query.Scan(ctx)
+
+	var endCursor time.Time
+	if len(posts) > 0 {
+		endCursor = posts[len(posts)-2].CreatedAt
+	}
+	hasNextPage := false
+
+	if len(posts) > *limit {
+		hasNextPage = true
+	}
+
+	if hasNextPage {
+		posts = posts[:len(posts)-1]
+	}
+
+	pageInfo := model.PageInfo{
+		EndCursor:   endCursor,
+		HasNextPage: hasNextPage,
+	}
+	postConnection := model.PostConnection{
+		Edges:    posts,
+		PageInfo: &pageInfo,
+	}
+
+	fmt.Println(endCursor)
+	return &postConnection, err
 }
 
 // Post is the resolver for the post field.
