@@ -34,8 +34,18 @@ type Comment {
   createdAt: Time!
 }
 
+type PostConnection {
+  edges: [Post!]!
+  pageInfo: PageInfo!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  endCursor: Time!
+}
+
 type Query {
-  posts: [Post!]!
+  posts(cursor: Time, limit: Int): PostConnection!
   post(id: ID!): Post!
   comments(postId: ID!): [Comment!]!
 }
