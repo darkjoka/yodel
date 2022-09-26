@@ -56,7 +56,7 @@ func (r *mutationResolver) Login(ctx context.Context, input model.NewUser) (stri
 	user := new(model.User)
 	err := r.UserScheme.DB.NewSelect().Model(user).Where("username = ?", input.Username).Scan(ctx)
 	if valid := model.CheckPasswordHash(input.Password, user.Password); !valid {
-		return "", fmt.Errorf("Wrong username or password")
+		return "", fmt.Errorf("wrong username or password")
 	}
 
 	token, _ := jwt.GenerateToken(user.ID)
@@ -69,7 +69,7 @@ func (r *mutationResolver) NewPost(ctx context.Context, input model.NewPost) (*m
 
 	user, ok := auth.ForContext(ctx)
 	if !ok {
-		return nil, errors.New("Access denied")
+		return nil, errors.New("access denied")
 	}
 
 	post := &model.Post{
@@ -92,7 +92,7 @@ func (r *mutationResolver) NewComment(ctx context.Context, input *model.NewComme
 	user, ok := auth.ForContext(ctx)
 
 	if !ok {
-		return nil, errors.New("Access denied")
+		return nil, errors.New("access denied")
 	}
 	postID, _ := uuid.Parse(input.PostID)
 
