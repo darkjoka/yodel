@@ -13,6 +13,8 @@ import (
 	"github.com/darkjoka/yodel/graph/generated"
 	"github.com/darkjoka/yodel/graph/model"
 	"github.com/go-chi/chi/v5"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/joho/godotenv"
 	"github.com/uptrace/bun/extra/bundebug"
 )
@@ -49,6 +51,17 @@ func main() {
 		VoteScheme:      model.VoteScheme{DB: DB},
 		CommentorScheme: model.CommentorScheme{DB: DB},
 	}
+
+	// should be run once
+	// opt for cli or find way to check if there's a change from previous migration
+	// m, err := migrate.New(
+	// 	"file://graph/db/migrations", dsn)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// if err := m.Up(); err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: cfg}))
 
